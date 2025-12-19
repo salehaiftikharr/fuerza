@@ -1,0 +1,154 @@
+.post-card {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.post-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.post-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.post-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.post-name {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.post-username {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.post-date {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.post-caption {
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.exercises-container {
+  margin-top: 15px;
+}
+
+.exercises-title {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.exercises-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.exercises-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.exercises-scroll::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+  border-radius: 3px;
+}
+
+.exercises-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.exercise-card {
+  background-color: var(--bg-input);
+  border-radius: var(--border-radius);
+  padding: 15px;
+  min-width: 180px;
+  flex-shrink: 0;
+}
+
+.exercise-name {
+  color: var(--primary-color);
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.exercise-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.exercise-muscle {
+  display: block;
+  margin-top: 10px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: center;
+  background-color: var(--bg-dark);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.post-actions {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+.btn-delete {
+  background-color: transparent;
+  border: 1px solid var(--danger-color);
+  color: var(--danger-color);
+  padding: 8px 16px;
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.btn-delete:hover {
+  background-color: var(--danger-color);
+  color: white;
+}

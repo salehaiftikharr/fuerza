@@ -1,0 +1,52 @@
+.home-page {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.home-title-section h1 {
+  margin-bottom: 15px;
+}
+
+.view-toggle {
+  display: flex;
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius);
+  padding: 4px;
+}
+
+.toggle-btn {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.toggle-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.toggle-btn:hover:not(.active) {
+  color: var(--text-primary);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius);
+}

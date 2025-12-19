@@ -1,0 +1,18 @@
+.explore-page {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.explore-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.explore-header h1 {
+  margin: 0;
+}

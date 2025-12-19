@@ -1,0 +1,17 @@
+{
+  "name": "fuerza",
+  "version": "1.0.0",
+  "description": "Social fitness tracking application",
+  "scripts": {
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install"
+  },
+  "keywords": ["fitness", "social", "workout", "tracking"],
+  "author": "Saleha Iftikhar",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

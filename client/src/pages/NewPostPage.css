@@ -1,0 +1,119 @@
+.new-post-page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.new-post-card {
+  background-color: var(--bg-card);
+  padding: 30px;
+  border-radius: var(--border-radius);
+}
+
+.new-post-card h1 {
+  margin-bottom: 30px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-color);
+}
+
+.exercises-section {
+  margin-top: 30px;
+}
+
+.exercises-section h3 {
+  margin-bottom: 20px;
+}
+
+.exercise-form {
+  background-color: var(--bg-input);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  margin-bottom: 15px;
+}
+
+.exercise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.btn-remove {
+  background: transparent;
+  border: none;
+  color: var(--danger-color);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.btn-remove:hover {
+  text-decoration: underline;
+}
+
+.exercise-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.exercise-stats-inputs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.exercise-stats-inputs .form-group {
+  margin-bottom: 0;
+}
+
+.exercise-stats-inputs label {
+  font-size: 0.75rem;
+}
+
+.exercise-stats-inputs input {
+  padding: 10px;
+}
+
+.btn-add-exercise {
+  width: 100%;
+  padding: 12px;
+  background-color: transparent;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.btn-add-exercise:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.button-group .btn {
+  flex: 1;
+}
+
+@media (max-width: 500px) {
+  .exercise-stats-inputs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
