@@ -95,7 +95,8 @@ const Post = {
 
   // Get feed (posts from followed users)
   async getFeed(uid, limit = 20, offset = 0) {
-    const [rows] = await db.execute(`
+    // Use query() instead of execute() because LIMIT/OFFSET don't work with prepared statements
+    const [rows] = await db.query(`
       SELECT p.*, u.username, u.name, u.profile_picture
       FROM Post p
       JOIN User u ON p.uid = u.uid
@@ -114,7 +115,8 @@ const Post = {
 
   // Get explore (all public posts)
   async getExplore(limit = 20, offset = 0) {
-    const [rows] = await db.execute(`
+    // Use query() instead of execute() because LIMIT/OFFSET don't work with prepared statements
+    const [rows] = await db.query(`
       SELECT p.*, u.username, u.name, u.profile_picture
       FROM Post p
       JOIN User u ON p.uid = u.uid
@@ -135,7 +137,8 @@ const Post = {
     // If viewing own profile, show all posts; otherwise only public
     const privateFilter = uid === viewerUid ? '' : 'AND p.is_private = 0';
 
-    const [rows] = await db.execute(`
+    // Use query() instead of execute() because LIMIT/OFFSET don't work with prepared statements
+    const [rows] = await db.query(`
       SELECT p.*, u.username, u.name, u.profile_picture
       FROM Post p
       JOIN User u ON p.uid = u.uid

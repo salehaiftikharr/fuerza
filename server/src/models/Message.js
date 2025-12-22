@@ -12,7 +12,8 @@ const Message = {
 
   // Get messages between two users
   async getConversation(uid1, uid2, limit = 50, offset = 0) {
-    const [rows] = await db.execute(`
+    // Use query() instead of execute() because LIMIT/OFFSET don't work well with prepared statements
+    const [rows] = await db.query(`
       SELECT m.*,
              sender.username as from_username, sender.name as from_name, sender.profile_picture as from_picture,
              receiver.username as to_username, receiver.name as to_name

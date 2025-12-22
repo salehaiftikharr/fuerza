@@ -12,6 +12,8 @@ const postRoutes = require('./routes/postRoutes');
 const followRoutes = require('./routes/followRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const exerciseRoutes = require('./routes/exerciseRoutes');
+const likeRoutes = require('./routes/likeRoutes');
+const commentRoutes = require('./routes/commentRoutes');
 
 const app = express();
 
@@ -38,6 +40,8 @@ app.use('/api/posts', postRoutes);
 app.use('/api/follows', followRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/exercises', exerciseRoutes);
+app.use('/api/likes', likeRoutes);
+app.use('/api/comments', commentRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

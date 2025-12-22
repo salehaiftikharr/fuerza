@@ -66,6 +66,8 @@ const MessagesPage = () => {
   }
 
   const selectConversation = (conv) => {
+    // Clear messages immediately when switching conversations
+    setMessages([])
     setSelectedUser({
       uid: conv.other_uid,
       username: conv.username,
@@ -77,6 +79,8 @@ const MessagesPage = () => {
   }
 
   const startNewConversation = (searchUser) => {
+    // Clear messages immediately when starting new conversation
+    setMessages([])
     setSelectedUser({
       uid: searchUser.uid,
       username: searchUser.username,
@@ -91,13 +95,29 @@ const MessagesPage = () => {
     e.preventDefault()
     if (!newMessage.trim() || !selectedUser) return
 
+    const messageText = newMessage
+    setNewMessage('') // Clear input immediately
+
+    // Optimistic update - add message to UI immediately
+    const optimisticMessage = {
+      mid: Date.now(), // Temporary ID
+      from_uid: user.uid,
+      to_uid: selectedUser.uid,
+      contents: messageText,
+      post_time: new Date().toISOString()
+    }
+    setMessages(prev => [...prev, optimisticMessage])
+
     try {
-      await messageService.sendMessage(selectedUser.uid, newMessage)
-      setNewMessage('')
-      loadMessages(selectedUser.uid)
-      loadConversations()
+      await messageService.sendMessage(selectedUser.uid, messageText)
+      // Reload to get the real message with proper ID
+      await loadMessages(selectedUser.uid)
+      await loadConversations()
     } catch (error) {
       console.error('Error sending message:', error)
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(m => m.mid !== optimisticMessage.mid))
+      setNewMessage(messageText) // Restore the message
     }
   }
 

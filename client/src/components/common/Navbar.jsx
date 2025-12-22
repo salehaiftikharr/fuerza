@@ -23,17 +23,31 @@ const Navbar = () => {
           <Link to="/explore" className="nav-link">Explore</Link>
           <Link to="/new-post" className="nav-link">New Post</Link>
           <Link to="/messages" className="nav-link">Messages</Link>
+          {user?.username && (
+            <Link to={`/profile/${user.username}`} className="nav-link">Profile</Link>
+          )}
         </div>
 
         <div className="navbar-user">
-          <Link to={`/profile/${user?.username}`} className="nav-link user-link">
-            <img
-              src={user?.profile_picture || '/uploads/default-avatar.png'}
-              alt={user?.username}
-              className="nav-avatar"
-            />
-            <span>{user?.username}</span>
-          </Link>
+          {user?.username ? (
+            <Link to={`/profile/${user.username}`} className="nav-link user-link">
+              <img
+                src={user.profile_picture || '/uploads/default-avatar.png'}
+                alt={user.username}
+                className="nav-avatar"
+              />
+              <span>{user.username}</span>
+            </Link>
+          ) : (
+            <span className="nav-link user-link">
+              <img
+                src="/uploads/default-avatar.png"
+                alt="User"
+                className="nav-avatar"
+              />
+              <span>Loading...</span>
+            </span>
+          )}
           <button onClick={handleLogout} className="btn-logout">
             Logout
           </button>
