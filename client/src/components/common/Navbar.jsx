@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { isDemoMode } from '../../demo/demoMode'
 import './Navbar.css'
 
 const Navbar = () => {
@@ -16,6 +17,7 @@ const Navbar = () => {
       <div className="navbar-container">
         <Link to="/" className="navbar-brand">
           Fuerza
+          {isDemoMode() && <span className="demo-badge">DEMO</span>}
         </Link>
 
         <div className="navbar-links">

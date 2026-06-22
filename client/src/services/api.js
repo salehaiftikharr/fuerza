@@ -1,6 +1,10 @@
 import axios from 'axios'
+import { isDemoMode } from '../demo/demoMode'
+import demoAdapter from '../demo/demoAdapter'
 
 const API_URL = import.meta.env.VITE_API_URL || ''
+
+const defaultAdapter = axios.getAdapter(axios.defaults.adapter)
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,
@@ -8,6 +12,11 @@ const api = axios.create({
     'Content-Type': 'application/json'
   }
 })
+
+// In Live Demo mode, serve every request from the in-memory store so the
+// deployed site works with no backend. Otherwise use the real network adapter.
+api.defaults.adapter = (config) =>
+  isDemoMode() ? demoAdapter(config) : defaultAdapter(config)
 
 // Request interceptor to add auth token
 api.interceptors.request.use(

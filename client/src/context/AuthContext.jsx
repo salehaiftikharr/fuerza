@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react'
 import { authService } from '../services/authService'
+import { disableDemoMode } from '../demo/demoMode'
 
 const AuthContext = createContext(null)
 
@@ -49,6 +50,7 @@ export const AuthProvider = ({ children }) => {
     }
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
+    disableDemoMode()
     setUser(null)
   }
 

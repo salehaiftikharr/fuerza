@@ -18,9 +18,32 @@
 
 .navbar-brand {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-color);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background-image: var(--accent-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.demo-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  background-image: var(--accent-grad);
+  padding: 3px 7px;
+  border-radius: 6px;
+  vertical-align: middle;
+}
+
+.navbar {
+  border-bottom: 1px solid var(--border-color);
 }
 
 .navbar-links {

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { enableDemoMode } from '../../demo/demoMode'
+import { resetDemoStore } from '../../demo/demoAdapter'
 import './AuthForms.css'
 
 const LoginForm = () => {
@@ -27,11 +29,32 @@ const LoginForm = () => {
     }
   }
 
+  const handleDemo = async () => {
+    setError('')
+    setLoading(true)
+    try {
+      enableDemoMode()
+      resetDemoStore()
+      await login('demo', 'demo')
+      navigate('/')
+    } catch (err) {
+      setError('Could not start demo')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="auth-container">
       <div className="auth-card">
+        <div className="auth-brand">Fuerza</div>
         <h1 className="auth-title">Welcome Back</h1>
         <p className="auth-subtitle">Sign in to continue to Fuerza</p>
+
+        <button type="button" className="btn auth-btn demo-btn" onClick={handleDemo} disabled={loading}>
+          ⚡ Try the Live Demo — no signup
+        </button>
+        <div className="auth-divider"><span>or sign in</span></div>
 
         {error && <div className="auth-error">{error}</div>}
 
