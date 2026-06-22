@@ -10,12 +10,18 @@ const poolOptions = {
 // into a config object so pool options are preserved.
 function fromDatabaseUrl(url) {
   const parsed = new URL(url);
+  // Managed MySQL providers (Aiven, PlanetScale, etc.) require TLS, usually
+  // signalled by ?ssl-mode=REQUIRED on the connection string.
+  const sslMode = parsed.searchParams.get('ssl-mode');
+  const needsSsl =
+    (sslMode && sslMode.toUpperCase() !== 'DISABLED') || /aivencloud\.com$/.test(parsed.hostname);
   return {
     host: parsed.hostname,
     port: parsed.port ? Number(parsed.port) : 3306,
     user: decodeURIComponent(parsed.username),
     password: decodeURIComponent(parsed.password),
-    database: parsed.pathname.replace(/^\//, '')
+    database: parsed.pathname.replace(/^\//, ''),
+    ...(needsSsl ? { ssl: { rejectUnauthorized: false } } : {})
   };
 }
 
