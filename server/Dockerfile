@@ -4,12 +4,15 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install --omit=dev
 
 COPY . .
 
 RUN mkdir -p uploads
 
-EXPOSE 5001
+ENV NODE_ENV=production
+ENV PORT=8000
 
-CMD ["npm", "run", "dev"]
+EXPOSE 8000
+
+CMD ["npm", "start"]
