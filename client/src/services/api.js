@@ -2,7 +2,11 @@ import axios from 'axios'
 import { isDemoMode } from '../demo/demoMode'
 import demoAdapter from '../demo/demoAdapter'
 
-const API_URL = import.meta.env.VITE_API_URL || ''
+// Production builds point at the deployed Render API; local dev falls back to
+// the Vite proxy. Override anytime with a VITE_API_URL env var.
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? 'https://fuerza-api.onrender.com' : '')
 
 const defaultAdapter = axios.getAdapter(axios.defaults.adapter)
 
