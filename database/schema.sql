@@ -2,6 +2,8 @@
 -- Social Fitness Tracking Application
 
 -- Drop tables if they exist (for clean setup)
+DROP TABLE IF EXISTS Comment;
+DROP TABLE IF EXISTS PostLike;
 DROP TABLE IF EXISTS RefreshToken;
 DROP TABLE IF EXISTS Message;
 DROP TABLE IF EXISTS Exercise;
@@ -114,6 +116,29 @@ CREATE TABLE Post (
     FOREIGN KEY (wid) REFERENCES Workout(wid) ON DELETE CASCADE,
     INDEX idx_user_posts (uid, post_time DESC),
     INDEX idx_public_posts (is_private, post_time DESC)
+);
+
+-- Post likes (kudos)
+CREATE TABLE PostLike (
+    pid INT NOT NULL,
+    uid INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (pid, uid),
+    FOREIGN KEY (pid) REFERENCES Post(pid) ON DELETE CASCADE,
+    FOREIGN KEY (uid) REFERENCES User(uid) ON DELETE CASCADE,
+    INDEX idx_post_likes (pid)
+);
+
+-- Comments
+CREATE TABLE Comment (
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    pid INT NOT NULL,
+    uid INT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (pid) REFERENCES Post(pid) ON DELETE CASCADE,
+    FOREIGN KEY (uid) REFERENCES User(uid) ON DELETE CASCADE,
+    INDEX idx_post_comments (pid, created_at)
 );
 
 -- Messages table

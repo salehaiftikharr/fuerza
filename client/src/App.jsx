@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/common/Navbar'
+import ThemeToggle from './components/common/ThemeToggle'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
@@ -12,7 +13,9 @@ import MessagesPage from './pages/MessagesPage'
 
 const App = () => {
   return (
-    <Routes>
+    <>
+      <ThemeToggle />
+      <Routes>
       {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
@@ -60,6 +63,7 @@ const App = () => {
         </ProtectedRoute>
       } />
     </Routes>
+    </>
   )
 }
 

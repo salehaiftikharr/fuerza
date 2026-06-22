@@ -162,15 +162,57 @@ function handle(config) {
   // ---- Exercises ----
   if (url === '/exercises/types') return EXERCISE_TYPES
 
-  // ---- Likes (not surfaced in UI; safe stubs) ----
-  if (/^\/likes\/\d+$/.test(url) && method === 'post') return { liked: true }
-  if (/^\/likes\/\d+$/.test(url) && method === 'delete') return { liked: false }
-  if (/^\/likes\/\d+\/status$/.test(url)) return { liked: false, count: 0 }
+  // ---- Likes (kudos) ----
+  // Deterministic baseline so counts look realistic with only a few demo users.
+  const likeCount = (pid) => ((pid * 7) % 17) + 4 + ((s.likes[pid] || []).length)
+  const likeId = url.match(/^\/likes\/(\d+)$/)
+  if (likeId && (method === 'post' || method === 'delete')) {
+    const pid = Number(likeId[1])
+    s.likes[pid] = s.likes[pid] || []
+    if (method === 'post' && !s.likes[pid].includes(DEMO_USER.uid)) s.likes[pid].push(DEMO_USER.uid)
+    if (method === 'delete') s.likes[pid] = s.likes[pid].filter((x) => x !== DEMO_USER.uid)
+    persist()
+    return { liked: method === 'post', likeCount: likeCount(pid) }
+  }
+  const likeStatus = url.match(/^\/likes\/(\d+)\/status$/)
+  if (likeStatus) {
+    const pid = Number(likeStatus[1])
+    return { liked: (s.likes[pid] || []).includes(DEMO_USER.uid), likeCount: likeCount(pid) }
+  }
   if (/^\/likes\/\d+\/users$/.test(url)) return []
 
-  // ---- Comments (safe stubs) ----
-  if (/^\/comments\/\d+$/.test(url) && method === 'get') return []
-  if (/^\/comments\/\d+$/.test(url)) return { message: 'ok' }
+  // ---- Comments ----
+  const commentId = url.match(/^\/comments\/(\d+)$/)
+  if (commentId && method === 'get') {
+    const list = s.comments[Number(commentId[1])] || []
+    return { comments: list, commentCount: list.length }
+  }
+  if (commentId && method === 'post') {
+    const pid = Number(commentId[1])
+    const me = byUid(DEMO_USER.uid)
+    const c = {
+      comment_id: s.nextCommentId++,
+      pid,
+      uid: me.uid,
+      content: body.content,
+      created_at: new Date().toISOString(),
+      username: me.username,
+      name: me.name,
+      profile_picture: me.profile_picture
+    }
+    s.comments[pid] = s.comments[pid] || []
+    s.comments[pid].push(c)
+    persist()
+    return { message: 'Comment added', commentId: c.comment_id, commentCount: s.comments[pid].length }
+  }
+  if (commentId && method === 'delete') {
+    const cid = Number(commentId[1])
+    Object.keys(s.comments).forEach((pid) => {
+      s.comments[pid] = (s.comments[pid] || []).filter((x) => x.comment_id !== cid)
+    })
+    persist()
+    return { message: 'Comment deleted' }
+  }
 
   // ---- Follows ----
   const follow = url.match(/^\/follows\/(\d+)$/)
@@ -249,8 +291,61 @@ function buildError(status, message) {
   return err
 }
 
+// Resize an uploaded image to a small square data URL so it fits in localStorage.
+function fileToResizedDataURL(file, size = 256) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = size
+        canvas.height = size
+        const min = Math.min(img.width, img.height)
+        const sx = (img.width - min) / 2
+        const sy = (img.height - min) / 2
+        canvas.getContext('2d').drawImage(img, sx, sy, min, min, 0, 0, size, size)
+        resolve(canvas.toDataURL('image/jpeg', 0.85))
+      }
+      img.onerror = reject
+      img.src = reader.result
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
+function handleAvatarUpload(config) {
+  return new Promise((resolve) => {
+    const fd = config.data
+    const file = fd && typeof fd.get === 'function' ? fd.get('picture') : null
+    const finish = (dataUrl) => {
+      const me = byUid(DEMO_USER.uid)
+      if (dataUrl && me) {
+        me.profile_picture = dataUrl
+        persist()
+      }
+      resolve({
+        data: { profile_picture: me ? me.profile_picture : '' },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config,
+        request: {}
+      })
+    }
+    if (file) fileToResizedDataURL(file).then(finish).catch(() => finish(null))
+    else finish(null)
+  })
+}
+
 // axios adapter signature: (config) => Promise<response>
 export default function demoAdapter(config) {
+  const url = (config.url || '').split('?')[0]
+  const method = (config.method || 'get').toLowerCase()
+  if (url === '/users/profile/picture' && method === 'post') {
+    return handleAvatarUpload(config)
+  }
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       try {

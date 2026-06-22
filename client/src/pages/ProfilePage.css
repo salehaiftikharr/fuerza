@@ -7,18 +7,22 @@
 .profile-header {
   display: flex;
   gap: 30px;
-  margin-bottom: 40px;
-  padding: 30px;
+  margin-bottom: 32px;
+  padding: 28px;
   background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
 }
 
 .profile-picture {
-  width: 150px;
-  height: 150px;
+  width: 132px;
+  height: 132px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+  border: 3px solid var(--border-color);
+  background: var(--bg-input);
 }
 
 .profile-info {

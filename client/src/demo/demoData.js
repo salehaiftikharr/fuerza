@@ -200,16 +200,46 @@ export function seedState() {
     })
   })
 
+  // Seed kudos: a spread of users like various posts.
+  const likes = {}
+  POSTS.forEach((p) => {
+    likes[p.pid] = USERS.filter((u) => u.uid !== p.uid && (p.pid + u.uid) % 3 === 0).map((u) => u.uid)
+  })
+
+  const mkComment = (id, pid, username, content, hrs) => {
+    const u = USERS.find((x) => x.username === username)
+    return {
+      comment_id: id,
+      pid,
+      uid: u.uid,
+      content,
+      created_at: hoursAgo(hrs),
+      username: u.username,
+      name: u.name,
+      profile_picture: u.profile_picture
+    }
+  }
+  const comments = {
+    101: [
+      mkComment(701, 101, 'marcus_strong', 'Monster pull 💪', 2),
+      mkComment(702, 101, 'sofia_fit', '405 is yours next week!', 1)
+    ],
+    103: [mkComment(703, 103, 'maya_lifts', 'That WOD looks brutal 🔥', 8)],
+    109: [mkComment(704, 109, 'jordan_hybrid', 'Welcome back! 🙌', 18)]
+  }
+
   return {
     users: USERS.map((u) => ({ ...u })),
     posts: POSTS.map((p) => ({ ...p })),
     // demo user (uid 1) follows everyone else by default
     follows: USERS.filter((u) => u.uid !== DEMO_USER.uid).map((u) => u.uid),
     messages,
-    likes: {},
-    comments: {},
+    likes,
+    comments,
+    // deterministic baseline so kudos counts look realistic with few demo users
     nextPid: 200,
-    nextMid: 900
+    nextMid: 900,
+    nextCommentId: 800
   }
 }
 

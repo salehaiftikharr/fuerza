@@ -1,15 +1,98 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
+import { likeService } from '../../services/likeService'
+import { commentService } from '../../services/commentService'
+import { useAuth } from '../../context/AuthContext'
 import './PostCard.css'
 
 const PostCard = ({ post, onDelete, showDelete = false }) => {
-  const formatDate = (dateString) => {
+  const { user } = useAuth()
+  const [liked, setLiked] = useState(false)
+  const [likeCount, setLikeCount] = useState(0)
+  const [comments, setComments] = useState([])
+  const [commentCount, setCommentCount] = useState(0)
+  const [showComments, setShowComments] = useState(false)
+  const [newComment, setNewComment] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    let active = true
+    likeService
+      .getLikeStatus(post.pid)
+      .then((d) => active && (setLiked(!!d.liked), setLikeCount(d.likeCount || 0)))
+      .catch(() => {})
+    commentService
+      .getComments(post.pid)
+      .then((d) => {
+        if (!active) return
+        const list = d.comments || []
+        setComments(list)
+        setCommentCount(d.commentCount ?? list.length)
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [post.pid])
+
+  const toggleLike = async () => {
+    const next = !liked
+    setLiked(next)
+    setLikeCount((c) => c + (next ? 1 : -1))
     try {
-      return format(new Date(dateString), 'MMM d, yyyy h:mm a')
+      const d = next ? await likeService.likePost(post.pid) : await likeService.unlikePost(post.pid)
+      setLiked(!!d.liked)
+      if (typeof d.likeCount === 'number') setLikeCount(d.likeCount)
     } catch {
-      return dateString
+      setLiked(!next)
+      setLikeCount((c) => c + (next ? -1 : 1))
     }
   }
+
+  const submitComment = async (e) => {
+    e.preventDefault()
+    const text = newComment.trim()
+    if (!text || busy) return
+    setBusy(true)
+    const optimistic = {
+      comment_id: `tmp-${text.length}-${commentCount}`,
+      content: text,
+      created_at: new Date().toISOString(),
+      uid: user?.uid,
+      username: user?.username,
+      name: user?.name,
+      profile_picture: user?.profile_picture
+    }
+    setComments((c) => [...c, optimistic])
+    setCommentCount((n) => n + 1)
+    setNewComment('')
+    try {
+      await commentService.createComment(post.pid, text)
+      const d = await commentService.getComments(post.pid)
+      setComments(d.comments || [])
+      setCommentCount(d.commentCount ?? (d.comments || []).length)
+    } catch {
+      /* keep optimistic comment */
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const formatDate = (s) => {
+    try {
+      return format(new Date(s), "MMM d · h:mm a")
+    } catch {
+      return s
+    }
+  }
+
+  const exercises = post.exercises || []
+  const totalVolume = exercises.reduce(
+    (t, e) => t + (Number(e.sets) || 0) * (Number(e.reps) || 0) * (Number(e.weights) || 0),
+    0
+  )
+  const totalSets = exercises.reduce((t, e) => t + (Number(e.sets) || 0), 0)
 
   return (
     <div className="post-card">
@@ -22,51 +105,104 @@ const PostCard = ({ post, onDelete, showDelete = false }) => {
           />
           <div className="post-user-info">
             <span className="post-name">{post.name}</span>
-            <span className="post-username">@{post.username}</span>
+            <span className="post-username">@{post.username} · {formatDate(post.post_time)}</span>
           </div>
         </Link>
-        <span className="post-date">{formatDate(post.post_time)}</span>
+        {showDelete && onDelete && (
+          <button onClick={() => onDelete(post.pid)} className="post-menu-delete" title="Delete post">
+            ✕
+          </button>
+        )}
       </div>
 
-      {post.caption && (
-        <p className="post-caption">{post.caption}</p>
-      )}
+      {post.caption && <p className="post-caption">{post.caption}</p>}
 
-      <div className="exercises-container">
-        <h4 className="exercises-title">Workout</h4>
-        <div className="exercises-scroll">
-          {post.exercises?.map((exercise, index) => (
-            <div key={index} className="exercise-card">
-              <h5 className="exercise-name">{exercise.exercise_name}</h5>
-              <div className="exercise-stats">
-                <div className="stat">
-                  <span className="stat-value">{exercise.sets}</span>
-                  <span className="stat-label">Sets</span>
-                </div>
-                <div className="stat">
-                  <span className="stat-value">{exercise.reps}</span>
-                  <span className="stat-label">Reps</span>
-                </div>
-                <div className="stat">
-                  <span className="stat-value">{exercise.weights}</span>
-                  <span className="stat-label">lbs</span>
-                </div>
-                <div className="stat">
-                  <span className="stat-value">{exercise.rest_time}s</span>
-                  <span className="stat-label">Rest</span>
-                </div>
-              </div>
-              <span className="exercise-muscle">{exercise.muscle_group}</span>
-            </div>
-          ))}
+      <div className="post-summary">
+        <div className="summary-item">
+          <span className="summary-value">{exercises.length}</span>
+          <span className="summary-label">Exercises</span>
+        </div>
+        <div className="summary-item">
+          <span className="summary-value">{totalVolume.toLocaleString()}</span>
+          <span className="summary-label">lbs Volume</span>
+        </div>
+        <div className="summary-item">
+          <span className="summary-value">{totalSets}</span>
+          <span className="summary-label">Total Sets</span>
         </div>
       </div>
 
-      {showDelete && onDelete && (
-        <div className="post-actions">
-          <button onClick={() => onDelete(post.pid)} className="btn-delete">
-            Delete Post
-          </button>
+      <div className="exercises-scroll">
+        {exercises.map((ex, index) => (
+          <div key={index} className="exercise-card">
+            <h5 className="exercise-name">{ex.exercise_name}</h5>
+            <span className="exercise-muscle">{ex.muscle_group}</span>
+            <div className="exercise-stats">
+              <div className="stat">
+                <span className="stat-value">{ex.sets}</span>
+                <span className="stat-label">Sets</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">{ex.reps}</span>
+                <span className="stat-label">Reps</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">{ex.weights}</span>
+                <span className="stat-label">lbs</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">{ex.rest_time}s</span>
+                <span className="stat-label">Rest</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="post-actions-bar">
+        <button className={`action-btn ${liked ? 'liked' : ''}`} onClick={toggleLike}>
+          <span className="action-icon">{liked ? '🔥' : '👏'}</span>
+          <span>{likeCount} Kudos</span>
+        </button>
+        <button
+          className={`action-btn ${showComments ? 'active' : ''}`}
+          onClick={() => setShowComments((v) => !v)}
+        >
+          <span className="action-icon">💬</span>
+          <span>{commentCount} {commentCount === 1 ? 'Comment' : 'Comments'}</span>
+        </button>
+      </div>
+
+      {showComments && (
+        <div className="comments-section">
+          {comments.map((c) => (
+            <div key={c.comment_id} className="comment">
+              <img
+                src={c.profile_picture || '/uploads/default-avatar.png'}
+                alt={c.username}
+                className="comment-avatar"
+              />
+              <div className="comment-body">
+                <span className="comment-name">
+                  {c.name} <span className="comment-username">@{c.username}</span>
+                </span>
+                <span className="comment-text">{c.content}</span>
+              </div>
+            </div>
+          ))}
+          {comments.length === 0 && <p className="comment-empty">Be the first to comment.</p>}
+          <form className="comment-form" onSubmit={submitComment}>
+            <input
+              className="form-control"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Add a comment..."
+              maxLength={1000}
+            />
+            <button type="submit" className="btn btn-primary" disabled={busy || !newComment.trim()}>
+              Post
+            </button>
+          </form>
         </div>
       )}
     </div>
