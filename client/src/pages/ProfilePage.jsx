@@ -68,49 +68,66 @@ const ProfilePage = () => {
     )
   }
 
+  const totalVolume = posts.reduce(
+    (t, p) =>
+      t +
+      (p.exercises || []).reduce(
+        (s, e) => s + (Number(e.sets) || 0) * (Number(e.reps) || 0) * (Number(e.weights) || 0),
+        0
+      ),
+    0
+  )
+  const volLabel = totalVolume >= 1000 ? `${(totalVolume / 1000).toFixed(1)}k` : `${totalVolume}`
+
   return (
     <div className="profile-page">
-      <div className="profile-header">
-        <img
-          src={profile.profile_picture || '/uploads/default-avatar.png'}
-          alt={profile.username}
-          className="profile-picture"
-        />
+      <div className="profile-hero">
+        <div className="profile-cover" />
+        <div className="profile-body">
+          <img
+            src={profile.profile_picture || '/uploads/default-avatar.png'}
+            alt={profile.username}
+            className="profile-picture"
+          />
 
-        <div className="profile-info">
-          <div className="profile-top">
-            <h1 className="profile-name">{profile.name}</h1>
-            {profile.isOwnProfile ? (
-              <Link to="/edit-profile" className="btn btn-outline">
-                Edit Profile
-              </Link>
-            ) : (
-              <FollowButton
-                uid={profile.uid}
-                initialIsFollowing={profile.isFollowing}
-                onFollowChange={handleFollowChange}
-              />
-            )}
-          </div>
-
-          <p className="profile-username">@{profile.username}</p>
-
-          {profile.profile_bio && (
-            <p className="profile-bio">{profile.profile_bio}</p>
-          )}
-
-          <div className="profile-stats">
-            <div className="stat">
-              <span className="stat-value">{posts.length}</span>
-              <span className="stat-label">Posts</span>
+          <div className="profile-info">
+            <div className="profile-top">
+              <div>
+                <h1 className="profile-name">{profile.name}</h1>
+                <p className="profile-username">@{profile.username}</p>
+              </div>
+              {profile.isOwnProfile ? (
+                <Link to="/edit-profile" className="btn btn-outline">
+                  Edit Profile
+                </Link>
+              ) : (
+                <FollowButton
+                  uid={profile.uid}
+                  initialIsFollowing={profile.isFollowing}
+                  onFollowChange={handleFollowChange}
+                />
+              )}
             </div>
-            <div className="stat">
-              <span className="stat-value">{profile.followers}</span>
-              <span className="stat-label">Followers</span>
-            </div>
-            <div className="stat">
-              <span className="stat-value">{profile.following}</span>
-              <span className="stat-label">Following</span>
+
+            {profile.profile_bio && <p className="profile-bio">{profile.profile_bio}</p>}
+
+            <div className="profile-stats">
+              <div className="stat">
+                <span className="stat-value">{posts.length}</span>
+                <span className="stat-label">Workouts</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">{profile.followers}</span>
+                <span className="stat-label">Followers</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">{profile.following}</span>
+                <span className="stat-label">Following</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">{volLabel}</span>
+                <span className="stat-label">lbs lifted</span>
+              </div>
             </div>
           </div>
         </div>
