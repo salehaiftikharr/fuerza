@@ -286,3 +286,48 @@
 .comment-form .btn {
   flex-shrink: 0;
 }
+
+/* Muscle-group chips */
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.muscle-chip {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 32%, transparent);
+}
+
+/* Top set highlight */
+.top-set {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--primary-color) 8%, var(--bg-input));
+  border: 1px solid color-mix(in srgb, var(--primary-color) 22%, transparent);
+}
+.top-set-badge {
+  flex-shrink: 0;
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background-image: var(--accent-grad);
+  padding: 4px 9px;
+  border-radius: 6px;
+}
+.top-set-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}

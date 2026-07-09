@@ -6,6 +6,16 @@ import { commentService } from '../../services/commentService'
 import { useAuth } from '../../context/AuthContext'
 import './PostCard.css'
 
+// Color per muscle group so the feed is scannable at a glance.
+const MUSCLE_COLORS = {
+  Chest: '#ff7a45',
+  Legs: '#6ea8fe',
+  Back: '#2bd576',
+  Shoulders: '#ffb02e',
+  Arms: '#ff3d6e',
+  Core: '#8b7cff'
+}
+
 const PostCard = ({ post, onDelete, showDelete = false }) => {
   const { user } = useAuth()
   const [liked, setLiked] = useState(false)
@@ -93,6 +103,11 @@ const PostCard = ({ post, onDelete, showDelete = false }) => {
     0
   )
   const totalSets = exercises.reduce((t, e) => t + (Number(e.sets) || 0), 0)
+  const muscleGroups = [...new Set(exercises.map((e) => e.muscle_group).filter(Boolean))]
+  const topSet = exercises.reduce(
+    (best, e) => ((Number(e.weights) || 0) > (Number(best?.weights) || 0) ? e : best),
+    null
+  )
 
   return (
     <div className="post-card">
@@ -117,6 +132,20 @@ const PostCard = ({ post, onDelete, showDelete = false }) => {
 
       {post.caption && <p className="post-caption">{post.caption}</p>}
 
+      {muscleGroups.length > 0 && (
+        <div className="post-tags">
+          {muscleGroups.map((m) => (
+            <span
+              key={m}
+              className="muscle-chip"
+              style={{ color: MUSCLE_COLORS[m] || 'var(--primary-color)' }}
+            >
+              {m}
+            </span>
+          ))}
+        </div>
+      )}
+
       <div className="post-summary">
         <div className="summary-item">
           <span className="summary-value">{exercises.length}</span>
@@ -131,6 +160,15 @@ const PostCard = ({ post, onDelete, showDelete = false }) => {
           <span className="summary-label">Total Sets</span>
         </div>
       </div>
+
+      {topSet && Number(topSet.weights) > 0 && (
+        <div className="top-set">
+          <span className="top-set-badge">Top set</span>
+          <span className="top-set-text">
+            {topSet.exercise_name} · {Number(topSet.weights).toLocaleString()} lbs × {topSet.reps}
+          </span>
+        </div>
+      )}
 
       <div className="exercises-scroll">
         {exercises.map((ex, index) => (
