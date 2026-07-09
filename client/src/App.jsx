@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
-import Navbar from './components/common/Navbar'
+import AppLayout from './components/layout/AppLayout'
 import ThemeToggle from './components/common/ThemeToggle'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import LoginPage from './pages/LoginPage'
@@ -11,58 +11,29 @@ import EditProfilePage from './pages/EditProfilePage'
 import NewPostPage from './pages/NewPostPage'
 import MessagesPage from './pages/MessagesPage'
 
+const protectedPage = (element, rail = true) => (
+  <ProtectedRoute>
+    <AppLayout rail={rail}>{element}</AppLayout>
+  </ProtectedRoute>
+)
+
 const App = () => {
   return (
     <>
       <ThemeToggle />
       <Routes>
-      {/* Public routes */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
+        {/* Public routes */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
 
-      {/* Protected routes */}
-      <Route path="/" element={
-        <ProtectedRoute>
-          <Navbar />
-          <HomePage />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/explore" element={
-        <ProtectedRoute>
-          <Navbar />
-          <ExplorePage />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/profile/:username" element={
-        <ProtectedRoute>
-          <Navbar />
-          <ProfilePage />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/edit-profile" element={
-        <ProtectedRoute>
-          <Navbar />
-          <EditProfilePage />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/new-post" element={
-        <ProtectedRoute>
-          <Navbar />
-          <NewPostPage />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/messages" element={
-        <ProtectedRoute>
-          <Navbar />
-          <MessagesPage />
-        </ProtectedRoute>
-      } />
-    </Routes>
+        {/* Protected routes */}
+        <Route path="/" element={protectedPage(<HomePage />)} />
+        <Route path="/explore" element={protectedPage(<ExplorePage />)} />
+        <Route path="/profile/:username" element={protectedPage(<ProfilePage />)} />
+        <Route path="/edit-profile" element={protectedPage(<EditProfilePage />, false)} />
+        <Route path="/new-post" element={protectedPage(<NewPostPage />, false)} />
+        <Route path="/messages" element={protectedPage(<MessagesPage />, false)} />
+      </Routes>
     </>
   )
 }
