@@ -2,8 +2,10 @@
 // Powers the entire app (feed, profiles, posts, messages) with realistic
 // in-memory data so the deployed site is fully clickable without a server.
 
-const avatar = (seed) =>
-  `https://api.dicebear.com/9.x/avataaars/png?seed=${encodeURIComponent(seed)}&radius=50`
+// Clean initials-style avatars (monogram on a brand-tinted gradient) so the
+// demo reads as a real product rather than cartoon placeholders.
+const avatar = (name) =>
+  `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(name)}&radius=50&fontWeight=600&backgroundType=gradientLinear&fontFamily=Helvetica`
 
 const hoursAgo = (h) => new Date(Date.now() - h * 60 * 60 * 1000).toISOString()
 const daysAgo = (d) => hoursAgo(d * 24)
@@ -14,7 +16,7 @@ export const DEMO_USER = {
   username: 'demo',
   email: 'demo@fuerza.app',
   name: 'Demo Athlete',
-  profile_picture: avatar('demo'),
+  profile_picture: avatar('Demo Athlete'),
   profile_bio: 'Exploring Fuerza in demo mode. Chasing PRs one session at a time. 🏋️'
 }
 
@@ -25,7 +27,7 @@ const USERS = [
     username: 'maya_lifts',
     email: 'maya@fuerza.app',
     name: 'Maya Chen',
-    profile_picture: avatar('maya_lifts'),
+    profile_picture: avatar('Maya Chen'),
     profile_bio: 'Powerlifter | 405 deadlift club | coaching @ Iron Temple'
   },
   {
@@ -33,7 +35,7 @@ const USERS = [
     username: 'marcus_strong',
     email: 'marcus@fuerza.app',
     name: 'Marcus Johnson',
-    profile_picture: avatar('marcus_strong'),
+    profile_picture: avatar('Marcus Johnson'),
     profile_bio: 'Bodybuilding prep 🏆 | high volume, higher standards'
   },
   {
@@ -41,7 +43,7 @@ const USERS = [
     username: 'sofia_fit',
     email: 'sofia@fuerza.app',
     name: 'Sofia Petrova',
-    profile_picture: avatar('sofia_fit'),
+    profile_picture: avatar('Sofia Petrova'),
     profile_bio: 'CrossFit coach | conditioning is a love language'
   },
   {
@@ -49,7 +51,7 @@ const USERS = [
     username: 'jordan_hybrid',
     email: 'jordan@fuerza.app',
     name: 'Jordan Lee',
-    profile_picture: avatar('jordan_hybrid'),
+    profile_picture: avatar('Jordan Lee'),
     profile_bio: 'Hybrid athlete: lift heavy, run far. Marathon + 500 squat goal.'
   },
   {
@@ -57,7 +59,7 @@ const USERS = [
     username: 'priya_moves',
     email: 'priya@fuerza.app',
     name: 'Priya Sharma',
-    profile_picture: avatar('priya_moves'),
+    profile_picture: avatar('Priya Sharma'),
     profile_bio: 'Calisthenics + mobility | bodyweight is plenty 🤸'
   }
 ]
